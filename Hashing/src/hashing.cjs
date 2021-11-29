@@ -3,8 +3,10 @@ var sha256 = require("crypto-js/sha256");
 
 function generateHash(obj)
 {
-    var hash = sha256(obj);
-    console.log(hash);
+	var json = JSON.stringify(obj)
+    var hash = sha256(json);
+	
+    console.log(hash.toString());
 }
 
 const data1 = "Blockchain Rock!";
