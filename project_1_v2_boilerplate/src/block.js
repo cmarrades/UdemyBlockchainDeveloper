@@ -12,6 +12,7 @@
 const SHA256 = require('crypto-js/sha256');
 const hex2ascii = require('hex2ascii');
 
+
 class Block {
 
     // Constructor - argument data will be the object containing the transaction data
@@ -22,7 +23,8 @@ class Block {
 		this.time = 0;                                              // Timestamp for the Block creation
 		this.previousBlockHash = null;                              // Reference to the previous Block Hash
     }
-    
+
+   
     /**
      *  validate() method will validate if the block has been tampered or not.
      *  Been tampered means that someone from outside the application tried to change
@@ -39,13 +41,22 @@ class Block {
         let self = this;
         return new Promise((resolve, reject) => {
             // Save in auxiliary variable the current block hash
-                                            
-            // Recalculate the hash of the Block
-            // Comparing if the hashes changed
-            // Returning the Block is not valid
+            var currentHash = self.hash;
             
+            // Recalculate the hash of the Block
+            var recalculatedHash = self.generateBlockHash();
+            // Comparing if the hashes changed
+            var hashesAreEqual = (recalculatedHash == currentHash)
+            // Returning the Block is not valid
+            console.log(hashesAreEqual);
             // Returning the Block is valid
-
+            if (hashesAreEqual){
+                resolve("Hashes are equal");
+            }
+            else 
+            {
+                reject (Error("Hashes are not equal"));
+            }
         });
     }
 
@@ -60,12 +71,37 @@ class Block {
      */
     getBData() {
         // Getting the encoded data saved in the Block
+        var encodedData = this.body;
         // Decoding the data to retrieve the JSON representation of the object
+        var decodedData = Buffer.from(encodedData).toString('utf8');
         // Parse the data to an object to be retrieve.
-
+        var data = JSON.parse(decodedData);
         // Resolve with the data if the object isn't the Genesis block
-
+        if (data == 'Genesis Block')
+        {
+            return null;
+        }
+        else
+        {
+            return data;
+        }
     }
+
+    generateBlockHash(){
+        var dataObject = this.getBData();
+
+        returngenerateHash(dataObject);
+    }
+      
+    generateHash(obj)
+    {
+        var json = JSON.stringify(obj);
+        var hash = sha256(json);
+
+        console.log(hash.toString());
+        return hash.toString();
+    }
+
 
 }
 
