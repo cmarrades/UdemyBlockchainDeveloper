@@ -64,6 +64,14 @@ class Blockchain {
     _addBlock(block) {
         let self = this;
         return new Promise(async (resolve, reject) => {
+           block.height = this.getChainHeight();
+           if (block.height != currentHeight +1)
+           {
+
+           }
+           else{
+
+           }
            
         });
     }
