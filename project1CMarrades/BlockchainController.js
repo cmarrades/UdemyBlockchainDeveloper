@@ -16,6 +16,27 @@ class BlockchainController {
         this.submitStar();
         this.getBlockByHash();
         this.getStarsByOwner();
+        this.validateBlockchain();
+    }
+
+
+    // Endpoint validating blockchain
+    validateBlockchain() {
+        this.app.get("/validateBlockchain/", async (req, res) => {
+            try
+            {
+                let isValid = await this.blockchain.validateChain();
+                if(isValid){
+                    return res.status(200).json("Blockchain successfully validated");
+                } else {
+                    return res.status(500).send("Blockchain has been tampered");
+                }
+            }
+            catch (error) {
+                console.log(error);
+                return res.status(500).send(error);
+            }
+        });
     }
 
     // Enpoint to Get a Block by Height (GET Endpoint)
@@ -62,13 +83,16 @@ class BlockchainController {
                 const signature = req.body.signature;
                 const star = req.body.star;
                 try {
+                    console.log(`Submitting star. address:${address}, message:${message}, signature: ${signature}, star:${star}`)
                     let block = await this.blockchain.submitStar(address, message, signature, star);
+                    console.log("Controller");
                     if(block){
                         return res.status(200).json(block);
                     } else {
                         return res.status(500).send("An error happened!");
                     }
                 } catch (error) {
+                    console.log(error);
                     return res.status(500).send(error);
                 }
             } else {
@@ -97,23 +121,24 @@ class BlockchainController {
 
     // This endpoint allows you to request the list of Stars registered by an owner
     getStarsByOwner() {
-        this.app.get("/blocks/:address", async (req, res) => {
-            if(req.params.address) {
-                const address = req.params.address;
-                try {
-                    let stars = await this.blockchain.getStarsByWalletAddress(address);
-                    if(stars){
-                        return res.status(200).json(stars);
-                    } else {
-                        return res.status(404).send("Block Not Found!");
-                    }
-                } catch (error) {
-                    return res.status(500).send("An error happened!");
+        this.app.get("/blocks/:address", async (req, res) => { 
+        if(req.params.address) {
+            const address = req.params.address;
+            try {
+                let stars = await this.blockchain.getStarsByWalletAddress(address);
+                if(stars){
+                    return res.status(200).json(stars);
+                } else {
+                    return res.status(404).send("Block Not Found!");
                 }
-            } else {
-                return res.status(500).send("Block Not Found! Review the Parameters!");
+            } catch (error) {
+                return res.status(500).send("An error happened!");
             }
-            
+        } else {
+            return res.status(500).send("Block Not Found! Review the Parameters!");
+        }
+
+
         });
     }
 
