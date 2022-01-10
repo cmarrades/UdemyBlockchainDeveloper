@@ -8,7 +8,7 @@ contract StarNotary {
 
     event starClaimed(address owner);
 
-    constructor()  {
+    constructor() public{
         starName = "Awesome Udacity Star";
     }
 
