@@ -1,4 +1,4 @@
-pragma solidity >=0.4.24;
+pragma solidity >=0.8.0;
 
 import "../node_modules/openzeppelin-solidity/contracts/token/ERC721/ERC721.sol";
 
@@ -29,14 +29,23 @@ contract StarNotary is ERC721 {
     }
 
 
-    // Function that allows you to convert an address into a payable address
-    function _make_payable(address x) internal pure returns (address payable) {
-        //https://docs.soliditylang.org/en/latest/types.html?highlight=address%20initial#address
-        //https://ethereum.stackexchange.com/questions/66415/convert-contract-to-payable-address/97123
-        return payable(address(uint160(x)));
-        //return payable(uint160(x));
+    // // Function that allows you to convert an address into a payable address
+    // function _make_payable(address x) internal pure returns (address payable) {
+    //     //https://docs.soliditylang.org/en/latest/types.html?highlight=address%20initial#address
+    //     //https://ethereum.stackexchange.com/questions/66415/convert-contract-to-payable-address/97123
+            //https://www.reddit.com/r/ethdev/comments/qike3a/cant_compile_truffle_project_that_imports/
+    //     return payable(address(uint160(x)));
+    //     //return payable(uint160(x));
         
-    }
+    // }
+
+    //     // Function that allows you to convert an address into a payable address
+    // function _make_payable(address x) internal pure returns (address payable) {
+    //     //https://docs.soliditylang.org/en/latest/types.html?highlight=address%20initial#address
+    //     //https://ethereum.stackexchange.com/questions/66415/convert-contract-to-payable-address/97123
+    //     //return address(uint160(x));
+    //     return address(uint160(x));
+    // }
 
     function buyStar(uint256 _tokenId) public  payable {
         require(starsForSale[_tokenId] > 0, "The Star should be up for sale");
@@ -45,8 +54,8 @@ contract StarNotary is ERC721 {
         require(msg.value > starCost, "You need to have enough Ether");
         transferFrom(ownerAddress, msg.sender, _tokenId);
         //_transferFrom(ownerAddress, msg.sender, _tokenId); // We can't use _addTokenTo or_removeTokenFrom functions, now we have to use _transferFrom
-        address payable ownerAddressPayable = _make_payable(ownerAddress); // We need to make this conversion to be able to use transfer() function to transfer ethers
-        address payable newOwnerAddressPayable = _make_payable(msg.sender);
+        address payable ownerAddressPayable = payable(ownerAddress); // We need to make this conversion to be able to use transfer() function to transfer ethers
+        address payable newOwnerAddressPayable = payable(msg.sender);
         ownerAddressPayable.transfer(starCost);
         if(msg.value > starCost) {
             newOwnerAddressPayable.transfer(msg.value - starCost);
